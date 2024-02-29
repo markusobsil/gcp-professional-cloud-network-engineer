@@ -54,3 +54,8 @@ On-Premise network ----(VPN)----> VPC-A ----|
  * Egress bandwith pricing applies to betwork using external IPs
  * Only regular network pricing applies
 
+<br/>
+<br/>
+<p style="text-align: center;">
+<a href="./vpc-peering-sharing.md"><- back</a> | <a href="./README.md">next -></a>
+</p>
