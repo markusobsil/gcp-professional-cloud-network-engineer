@@ -25,7 +25,7 @@
 
 ## Example - Simple VPC peering
 
-* [Simple VPC peering](./example/vpc-peering-simple/main.tf) with terraform
+* [Simple VPC peering](./examples/vpc-peering-simple/main.tf) with terraform
 * Created 2 VPCs in the same project
  * One VPC with 2 subnets
  * One VPC with 1 subnet and one secondary IP range
@@ -76,7 +76,7 @@ PRIORITY: 0
                                           import_custom_routes=false
 ```
 
-* [Advertise custom route between VPCs](./example/vpc-peering-advertise-custom-route/main.tf)
+* [Advertise custom route between VPCs](./examples/vpc-peering-advertise-custom-route/main.tf) with terraform
 * If you have connected a on-premise location via VPN in vpc-hub, you normally create a custom route
  * Next-Hop will be the VPN tunnel endpoint
 * As this is configured as custom route, it will not be exported/imported by default
