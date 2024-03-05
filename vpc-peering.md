@@ -1,5 +1,3 @@
-# VPC Peering and Shared VPC
-
 # VPC Peering
 
 * It is possible to connect two VPCs within and across different organizations
@@ -174,5 +172,5 @@ PRIORITY: 0
 <br/>
 <br/>
 <p style="text-align: center;">
-<a href="./vpc-peering-sharing.md"><- back</a> | <a href="./README.md">next -></a>
+<a href="./vpc-peering.md"><- back</a> | <a href="./vpc-sharing.md">next -></a>
 </p>

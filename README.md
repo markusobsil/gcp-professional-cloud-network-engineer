@@ -29,6 +29,5 @@
 
 1. [IAM](./iam.md)
 2. [VPC](./vpc.md)
-3. [VPC Peering and Shared VPC](./vpc-peering-sharing.md)
-
-
+3. [VPC Peering](./vpc-peering-sharing.md)
+4. [Shared VPC](./shared-vpc.md)

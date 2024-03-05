@@ -78,5 +78,5 @@
 <br/>
 <br/>
 <p style="text-align: center;">
-<a href="./iam.md"><- back</a> | <a href="./vpc-peering-sharing.md">next -></a>
+<a href="./iam.md"><- back</a> | <a href="./vpc-peering.md">next -></a>
 </p>
