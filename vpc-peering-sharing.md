@@ -23,24 +23,142 @@
  * Need to be exported/imported
  * Does not matter if static or dynamic
 
-## Example - On-Premise networks
+## Example - Simple VPC peering
 
-* If you have connected a on-premise location via VPN in VPC-A, you normally create a custom route
- * Next-Hop will be the VPN tunnel endpoint
-* As this is configured as custom route, it will not be exchanged with VPC-B by default
-* You would need to export this custom route and import it in VPC-B
-* Let's assume VPC-A is peered with VPC-B and VPC-C
- * VPC-B and VPC-C cannot communicate with each other, as there is not transitive peering supported
-* If you export/import the On-Premise network, you build sort of a Hub-Spoke topology
+* [Simple VPC peering](./example/vpc-peering-simple)
+* Simple VPC peering example with terraform
+* Created 2 VPCs in the same project
+ * One VPC with 2 subnets
+ * One VPC with 1 subnet and one secondary IP range
+* Output shows that one VPC get all default routes including secondary IP range
+ * Name of the route indicates it's origin (peering-route)
 
+```shell
+$ gcloud compute routes list --filter=network:vpc-a
+NAME: default-route-300d50905a111dd6
+NETWORK: vpc-a
+DEST_RANGE: 10.2.0.0/16
+NEXT_HOP: vpc-a
+PRIORITY: 0
+
+NAME: default-route-826a317433067d21
+NETWORK: vpc-a
+DEST_RANGE: 10.1.0.0/16
+NEXT_HOP: vpc-a
+PRIORITY: 0
+
+NAME: default-route-f899c7d2294dac03
+NETWORK: vpc-a
+DEST_RANGE: 0.0.0.0/0
+NEXT_HOP: default-internet-gateway
+PRIORITY: 1000
+
+NAME: peering-route-65f42c2f01d2cfb2
+NETWORK: vpc-a
+DEST_RANGE: 10.3.0.0/16
+NEXT_HOP: peering-1-in-vpc-a
+PRIORITY: 0
+
+NAME: peering-route-a1242df1c0d88c99
+NETWORK: vpc-a
+DEST_RANGE: 192.168.10.0/24
+NEXT_HOP: peering-1-in-vpc-a
+PRIORITY: 0
+```
+
+## Example - Advertise custom static route
 
 ```
-                                            |----(VPC peering)----> VPC-B
-                                            |                       (Spoke)
-On-Premise network ----(VPN)----> VPC-A ----|
-                                  (Hub)     |
-                                            |----(VPC peering)----> VPC-C
-                                                                    (Spoke)
+                  |----(VPC peering)----| vpc-spoke-a
+                  |                       import_custom_routes=true
+     vpc-hub |----|
+                  |
+                  |----(VPC peering)----| vpc-spoke-b
+                                          import_custom_routes=false
+```
+
+* [Advertise custom route between VPCs](./example/vpc-peering-advertise-custom-route)
+* If you have connected a on-premise location via VPN in vpc-hub, you normally create a custom route
+ * Next-Hop will be the VPN tunnel endpoint
+* As this is configured as custom route, it will not be exported/imported by default
+* In this example I will export/import custom routes from one peering and leave the default settings on the other one
+
+```shell
+$ gcloud compute routes list --filter=network:vpc-spoke-a
+NAME: default-route-9f124a6ba0c40c96
+NETWORK: vpc-spoke-a
+DEST_RANGE: 0.0.0.0/0
+NEXT_HOP: default-internet-gateway
+PRIORITY: 1000
+
+NAME: default-route-e271d0b479397d49
+NETWORK: vpc-spoke-a
+DEST_RANGE: 10.2.1.0/24
+NEXT_HOP: vpc-spoke-a
+PRIORITY: 0
+
+NAME: peering-route-2713a4c3b4b2c97b
+NETWORK: vpc-spoke-a
+DEST_RANGE: 10.1.2.0/24
+NEXT_HOP: peering-vpc-hub-vpc-spoke-a
+PRIORITY: 0
+
+NAME: peering-route-88c6198e3a76d642
+NETWORK: vpc-spoke-a
+DEST_RANGE: 192.168.10.0/24
+NEXT_HOP: peering-vpc-hub-vpc-spoke-a
+PRIORITY: 0
+
+NAME: peering-route-8e952ef8f76bbef7
+NETWORK: vpc-spoke-a
+DEST_RANGE: 10.1.1.0/24
+NEXT_HOP: peering-vpc-hub-vpc-spoke-a
+PRIORITY: 0
+
+NAME: peering-route-bedc4bad4d5628ca
+NETWORK: vpc-spoke-a
+DEST_RANGE: 1.1.1.1/32
+NEXT_HOP: peering-vpc-hub-vpc-spoke-a
+PRIORITY: 100
+
+NAME: peering-route-c7e4550ee4607923
+NETWORK: vpc-spoke-a
+DEST_RANGE: 1.1.1.2/32
+NEXT_HOP: peering-vpc-hub-vpc-spoke-a
+PRIORITY: 100
+```
+
+```shell
+$ gcloud compute routes list --filter=network:vpc-spoke-b
+NAME: default-route-a14699fe0579a396
+NETWORK: vpc-spoke-b
+DEST_RANGE: 10.3.1.0/24
+NEXT_HOP: vpc-spoke-b
+PRIORITY: 0
+
+NAME: default-route-f94fa2af840f8914
+NETWORK: vpc-spoke-b
+DEST_RANGE: 0.0.0.0/0
+NEXT_HOP: default-internet-gateway
+PRIORITY: 1000
+
+NAME: peering-route-0785c91139f27438
+NETWORK: vpc-spoke-b
+DEST_RANGE: 10.1.2.0/24
+NEXT_HOP: peering-vpc-hub-vpc-spoke-b
+PRIORITY: 0
+
+NAME: peering-route-8613b0b89bb38717
+NETWORK: vpc-spoke-b
+DEST_RANGE: 192.168.10.0/24
+NEXT_HOP: peering-vpc-hub-vpc-spoke-b
+PRIORITY: 0
+
+NAME: peering-route-f417df13ebc4fddc
+NETWORK: vpc-spoke-b
+DEST_RANGE: 10.1.1.0/24
+NEXT_HOP: peering-vpc-hub-vpc-spoke-b
+PRIORITY: 0
 ```
 
 ## Advantages of VPC peering
