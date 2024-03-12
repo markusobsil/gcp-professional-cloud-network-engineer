@@ -2,33 +2,33 @@
 
 * It is possible to connect two VPCs within and across different organizations
 * It is a two-way connection
- * VPC-A needs to create a Peer connection from VPC-A to VPC-B
- * VPC-B needs to create a Peer connection from VPC-B to VPC-B (accept the invitation)
+  * VPC-A needs to create a Peer connection from VPC-A to VPC-B
+  * VPC-B needs to create a Peer connection from VPC-B to VPC-B (accept the invitation)
 * No overlapping CIDR blocks possible
- * VPC peering creation is denied if IP ranges overlap
+  * VPC peering creation is denied if IP ranges overlap
 * By default, all subnet routes are exchanged
 * Project Owner, Project Editor and Network Admin roles can create a VPC network peering
 
 ## Routing between peered VPCs
 
 * There is no route control
- * You cannot disable the (full) route exchange
- * You need to filter traffic with Firewall rules
+  * You cannot disable the (full) route exchange
+  * You need to filter traffic with Firewall rules
 * You can reach all internal VM IPs and Internal Load Balancer IPs after peering
 * You see all subnets from the peered VPC in your routing table
- * Same Gateway IP, no difference between woen subnets and subnets of peered VPC
+  * Same Gateway IP, no difference between woen subnets and subnets of peered VPC
 * Custom routes are not exchanged automatically
- * Need to be exported/imported
- * Does not matter if static or dynamic
+  * Need to be exported/imported
+  * Does not matter if static or dynamic
 
 ## Example - Simple VPC peering
 
 * [Simple VPC peering](./examples/vpc-peering-simple/main.tf) with terraform
 * Created 2 VPCs in the same project
- * One VPC with 2 subnets
- * One VPC with 1 subnet and one secondary IP range
+  * One VPC with 2 subnets
+  * One VPC with 1 subnet and one secondary IP range
 * Output shows that one VPC get all default routes including secondary IP range
- * Name of the route indicates it's origin (peering-route)
+  * Name of the route indicates it's origin (peering-route)
 
 ```shell
 $ gcloud compute routes list --filter=network:vpc-a
@@ -65,7 +65,7 @@ PRIORITY: 0
 
 ## Example - Advertise custom static route
 
-```
+```text
                   |----(VPC peering)----| vpc-spoke-a
                   |                       import_custom_routes=true
      vpc-hub |----|
@@ -76,7 +76,7 @@ PRIORITY: 0
 
 * [Advertise custom route between VPCs](./examples/vpc-peering-advertise-custom-route/main.tf) with terraform
 * If you have connected a on-premise location via VPN in vpc-hub, you normally create a custom route
- * Next-Hop will be the VPN tunnel endpoint
+  * Next-Hop will be the VPN tunnel endpoint
 * As this is configured as custom route, it will not be exported/imported by default
 * In this example I will export/import custom routes from one peering and leave the default settings on the other one
 
@@ -161,16 +161,10 @@ PRIORITY: 0
 ## Advantages of VPC peering
 
 * Latency
- * Much better than using Public IP networking
+  * Much better than using Public IP networking
 * Security
- * Private communication
- * No service exposure to the public internet needed
+  * Private communication
+  * No service exposure to the public internet needed
 * Costs
- * Egress bandwith pricing applies to betwork using external IPs
- * Only regular network pricing applies
-
-<br/>
-<br/>
-<p style="text-align: center;">
-<a href="./vpc-peering.md"><- back</a> | <a href="./vpc-sharing.md">next -></a>
-</p>
+  * Egress bandwith pricing applies to betwork using external IPs
+  * Only regular network pricing applies

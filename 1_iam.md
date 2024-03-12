@@ -1,6 +1,7 @@
 # Identity Access Management
 
 ## Overview
+
 * There are some roles you need to know, as a Network admin
 * OrgAdmin grant/delegate the networkAdmin and securityAdmin the rights to configure network/security policies at organizational level
 * They will be able to manage all projects and resources of this organization (Inheritance)
@@ -50,9 +51,3 @@ gcloud iam roles list --filter="network"
 ```shell
 gcloud iam roles describe roles/compute.networkAdmin.v1
 ```
-
-<br/>
-<br/>
-<p style="text-align: center;">
-<a href="./README.md"><- back</a> | <a href="./vpc.md">next -></a>
-</p>
