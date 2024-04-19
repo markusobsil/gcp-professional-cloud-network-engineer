@@ -10,6 +10,8 @@
 4. [Shared VPC](./notes/4_shared-vpc.md)
 5. [Cloud NAT](./notes/5_cloud-nat.md)
 6. [Google Private Access](./notes/6_private-access.md)
+7. [Hybrid Connectivity](./notes/7_hybrid-connectivity.md)
+7. [Cloud DNS](./notes/8_cloud-dns.md)
 
 ## Examples
 

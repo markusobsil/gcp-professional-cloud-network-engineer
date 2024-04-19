@@ -60,6 +60,8 @@
 * Two types of routes are supported
   * System-generated subnet routes
   * Custom routes
+* There is a third route type, but a special one, which is peering
+  * This will be part of the VPC peering section
 * GCP automatically adds routes to the PVC routing table, when a new Subnet is created
   * Primary and Secondary routes are created
 * A Default route is generated too, after a VPC is created
@@ -69,6 +71,14 @@
   * For sure it can be replaced with a custom route, to e.g. route to a Proxy
 * Custom routes can either be static routes or dynamic routes
   * Custom routes can be applied to all instances in the VPC, or only specific ones (network tags)
+* One limitations of custom static routes is, that it cannot point to a VLAN attachment
+
+## Dynamic routes
+
+* Normally managed by Cloud Routers
+* Represent IP address ranges outside a VPC
+  * Received via the GCP peer
+* Use by Dedicated/Partner Interconnect, HA VPN, Classic VPN with dynamic routing
 
 ## VPC Firewall rules
 
@@ -76,3 +86,71 @@
 * 0 is highest priority
 * Exits on first match
 * A target could be All instances, instances with specific tags, specific Service Accounts
+
+## IPv6
+
+* IPv6 is supported
+  * On a subnet level
+* GCP introduced the concept of a subnet stack
+  * Single-stack subnets: IPv6
+  * Dual-stack subnets: IPv4 and IPv6
+* IPv6 access type can be *internal* or *external*
+  * Internal IPv6 addresses use ULAs - Unique Local Addresses (fd20::/20)
+  * External Ipv6 addresses are routable on the internet GLAs - Global Unicast Addresses (2600:1900::/28)
+* The IPv6 range GCP provides can fit 68719476736 /64 networks
+
+### ULA networks
+
+* GCP assignes a /48 ULA range
+  * from the mentioned fd20::/20 range
+* Per VPC a /48
+* Per Subnet a /64
+* Per VM a /96
+
+```
+
+ +--------+----------------------------------------+----------------+--------------------------------+---------------------------------+
+ |   8    |                  40                    |       16       |              32                |               32                |
+ |  ULA   |                 VPC                    |     Subnet     |              VM                |             Flexible            |
+ +--------+----------------------------------------+----------------+--------------------------------+---------------------------------+
+
+ ```
+
+### System-generated default routes in IPv6
+
+* When a dual-stack subnets is created, a IPv6 default route is created
+  * Only when an external IPv6 address range is defined
+* You are able to delete the default route
+  * Packets are getting dropped, if you do not replace the default route with a custom route
+  * Same behaviour like in IPv4
+
+## Bring your own IP
+
+* BYOIP enables customers to assign IP addresses from their own public IP range to GCP resources
+  * E.g. use one network of their range to route traffic to internet-facing VMs
+* BYOIP is supported in GCP the same way
+  * GCP manages them (you assign a IP range) and assigns them to GCP resources
+  * IPs are either idle or in-use
+* No charges incur for the use of the IP addresses
+* The IP address is assigned to
+  * Regional scope or global scope
+  * Must support an external address type
+  * Cannot be a Classic VPN gateway, GKE node/pod or Autoscaling MIG
+* Caveats
+  * Prefixes cannot overlap with subnet or alias ranges in the VPC
+  * IPv4 support only
+  * Overlapping BGP route announcements
+
+## Multiple network interfaces
+
+* One VM can have multiple network interfaces
+  * To be connected to different subnets directly
+  * Each subnet belongs to a different VPCs
+* Every VM has a default network interface
+* Caveats
+  * You can only configure a network interface when you create an instance
+  * The network must exist before you create the VM
+  * Each network interface must be in a different network
+  * The network IP ranges cannot overlap
+  * Up to 8 network internfaces are supported, depending on machine type
+  * General rule of thumb: one network interface per vCPU
